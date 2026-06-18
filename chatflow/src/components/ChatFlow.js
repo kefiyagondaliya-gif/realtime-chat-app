@@ -3,6 +3,8 @@ import {
   Search, MessageSquare, Moon, Sun, Plus, X, Mail, Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import ThemeToggle from './ThemeToggle';
 import { filterChats, getInitials } from '../utils/helpers';
 import StartChatModal from './StartChatModel';
 import toast from 'react-hot-toast';
@@ -318,7 +320,7 @@ const ChatApp = () => {
     startConversation, searchUsers, loadConversations
   } = useAuth();
 
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
+  const { isDark: darkMode, toggleTheme: setDarkMode } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [availableUsers, setAvailableUsers] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -337,7 +339,7 @@ const ChatApp = () => {
   const chats = conversations || [];
 
   // ─ Dark mode persist ────────────────────────────────────
-  useEffect(() => { localStorage.setItem('darkMode', darkMode); }, [darkMode]);
+  
 
   // ─ Keep selectedChat ref fresh ──────────────────────────
   useEffect(() => { selectedChatRef.current = selectedChat; }, [selectedChat]);
