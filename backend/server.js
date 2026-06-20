@@ -16,7 +16,10 @@ const cors = require('cors')
 // Load environment variables
 dotenv.config();
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: function(origin, callback) {
+    // Allow all origins in production (Vercel domains change)
+    callback(null, true);
+  },
   credentials: true
 }));
 
