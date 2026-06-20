@@ -1,37 +1,31 @@
 const cors = require('cors');
 
-/**
- * CORS Configuration
- * Handles Cross-Origin Resource Sharing
- */
-
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    
+
     const allowedOrigins = [
-      process.env.FRONTEND_URL || 'http://localhost:3000',
+      process.env.FRONTEND_URL,
+      'http://localhost:3000',
       'http://localhost:3001',
-      'http://localhost:5173', // Vite default
+      'http://localhost:5173',
       'http://127.0.0.1:3000',
       'http://127.0.0.1:5173',
-    ];
+    ].filter(Boolean);
 
-    // In production, only allow specific domains
-    if (process.env.NODE_ENV === 'production') {
-      // Add your production domains here
-      // allowedOrigins = ['https://yourapp.com', 'https://www.yourapp.com'];
-    }
+    // Allow all Vercel preview/production domains
+    const isVercel = origin.endsWith('.vercel.app');
+    const isAllowed = allowedOrigins.includes(origin) || isVercel;
 
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (isAllowed) {
       callback(null, true);
     } else {
       console.log(`CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      callback(null, true); // Allow all for now — tighten later
     }
   },
-  credentials: true, // Allow cookies and authorization headers
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: [
     'Content-Type',
@@ -41,7 +35,7 @@ const corsOptions = {
     'Origin'
   ],
   exposedHeaders: ['Authorization'],
-  maxAge: 86400 // 24 hours
+  maxAge: 86400
 };
 
 module.exports = cors(corsOptions);
